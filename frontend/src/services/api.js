@@ -1,15 +1,20 @@
 import axios from 'axios';
 
-// Base API URL (akan otomatis proxy ke backend)
-const API_URL = '/api/destinations';
+// Base API URL - pakai direct URL untuk testing
+const API_URL = 'http://localhost:5000/api/destinations';
 
 // Get all destinations dengan query params
 export const getDestinations = async (params = {}) => {
   try {
+    console.log('🔍 Fetching destinations from:', API_URL);
+    console.log('📋 Params:', params);
+    
     const response = await axios.get(API_URL, { params });
+    
+    console.log('✅ Response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching destinations:', error);
+    console.error('❌ Error fetching destinations:', error);
     throw error;
   }
 };

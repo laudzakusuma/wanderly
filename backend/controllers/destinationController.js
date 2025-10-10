@@ -9,11 +9,17 @@ exports.getDestinations = async (req, res) => {
   try {
     const { search, category, country, minPrice, maxPrice, sortBy } = req.query;
     
-    let query = { isActive: true };
+    // PENTING: Jangan filter isActive dulu untuk testing
+    let query = {};
     
     // Search berdasarkan nama, deskripsi, kota, atau negara
     if (search) {
-      query.$text = { $search: search };
+      query.$or = [
+        { name: new RegExp(search, 'i') },
+        { description: new RegExp(search, 'i') },
+        { city: new RegExp(search, 'i') },
+        { country: new RegExp(search, 'i') }
+      ];
     }
     
     // Filter berdasarkan kategori
@@ -45,7 +51,11 @@ exports.getDestinations = async (req, res) => {
       sort = { createdAt: -1 }; // Default: newest first
     }
     
+    console.log('🔍 Query:', JSON.stringify(query));
+    
     const destinations = await Destination.find(query).sort(sort);
+    
+    console.log('✅ Found destinations:', destinations.length);
     
     res.status(200).json({
       success: true,
@@ -53,7 +63,7 @@ exports.getDestinations = async (req, res) => {
       data: destinations
     });
   } catch (error) {
-    console.error('Error in getDestinations:', error);
+    console.error('❌ Error in getDestinations:', error);
     res.status(500).json({
       success: false,
       message: 'Gagal mengambil data destinasi',
@@ -92,7 +102,7 @@ exports.getDestinationById = async (req, res) => {
 
 // @desc    Create new destination
 // @route   POST /api/destinations
-// @access  Public (untuk MVP, nanti bisa ditambah auth)
+// @access  Public (untuk MVP)
 exports.createDestination = async (req, res) => {
   try {
     const destinationData = {
@@ -148,7 +158,6 @@ exports.updateDestination = async (req, res) => {
         path: `/uploads/${file.filename}`
       }));
       
-      // Gabungkan dengan gambar lama (jika tidak dihapus)
       updateData.images = [...destination.images, ...newImages];
     }
     

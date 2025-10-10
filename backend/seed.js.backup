@@ -17,7 +17,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'bali-1.jpg',
-        path: 'https://picsum.photos/seed/bali-beach/800/600'
+        path: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80' // Uluwatu Temple
+      },
+      {
+        filename: 'bali-2.jpg',
+        path: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=800&q=80' // Rice Terrace
+      },
+      {
+        filename: 'bali-3.jpg',
+        path: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80' // Bali Beach
       }
     ],
     tags: ['pantai', 'budaya', 'surfing', 'pura'],
@@ -40,7 +48,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'raja-ampat-1.jpg',
-        path: 'https://picsum.photos/seed/raja-ampat-islands/800/600'
+        path: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=800&q=80' // Raja Ampat Islands
+      },
+      {
+        filename: 'raja-ampat-2.jpg',
+        path: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80' // Crystal Waters
+      },
+      {
+        filename: 'raja-ampat-3.jpg',
+        path: 'https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80' // Karst Islands
       }
     ],
     tags: ['diving', 'snorkeling', 'pulau', 'alam'],
@@ -63,7 +79,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'bromo-1.jpg',
-        path: 'https://picsum.photos/seed/bromo-volcano-sunrise/800/600'
+        path: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=800&q=80' // Bromo Sunrise
+      },
+      {
+        filename: 'bromo-2.jpg',
+        path: 'https://images.unsplash.com/photo-1589889615542-b0c2153c57f7?w=800&q=80' // Bromo Crater
+      },
+      {
+        filename: 'bromo-3.jpg',
+        path: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=800&q=80' // Sea of Sand
       }
     ],
     tags: ['hiking', 'sunrise', 'volcano', 'nature'],
@@ -86,7 +110,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'yogyakarta-1.jpg',
-        path: 'https://picsum.photos/seed/borobudur-temple-yogya/800/600'
+        path: 'https://images.unsplash.com/photo-1591382386627-349b692688ff?w=800&q=80' // Borobudur
+      },
+      {
+        filename: 'yogyakarta-2.jpg',
+        path: 'https://images.unsplash.com/photo-1548016979-69eb552f29e4?w=800&q=80' // Prambanan
+      },
+      {
+        filename: 'yogyakarta-3.jpg',
+        path: 'https://images.unsplash.com/photo-1552550049-db097c9480d1?w=800&q=80' // Yogya Culture
       }
     ],
     tags: ['candi', 'budaya', 'sejarah', 'kuliner'],
@@ -109,7 +141,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'komodo-1.jpg',
-        path: 'https://picsum.photos/seed/komodo-island-pink-beach/800/600'
+        path: 'https://images.unsplash.com/photo-1552309631-0801a6c4e42f?w=800&q=80' // Komodo Island View
+      },
+      {
+        filename: 'komodo-2.jpg',
+        path: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=800&q=80' // Pink Beach
+      },
+      {
+        filename: 'komodo-3.jpg',
+        path: 'https://images.unsplash.com/photo-1601024445121-e5b82f020549?w=800&q=80' // Padar Island
       }
     ],
     tags: ['komodo', 'adventure', 'beach', 'diving'],
@@ -132,7 +172,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'lombok-1.jpg',
-        path: 'https://picsum.photos/seed/lombok-beach-rinjani/800/600'
+        path: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=800&q=80' // Lombok Beach
+      },
+      {
+        filename: 'lombok-2.jpg',
+        path: 'https://images.unsplash.com/photo-1573790387438-4da905039392?w=800&q=80' // Senggigi
+      },
+      {
+        filename: 'lombok-3.jpg',
+        path: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80' // Gili Islands
       }
     ],
     tags: ['pantai', 'gunung', 'air terjun', 'surfing'],
@@ -155,7 +203,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'toba-1.jpg',
-        path: 'https://picsum.photos/seed/lake-toba-samosir/800/600'
+        path: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=800&q=80' // Lake Toba Aerial
+      },
+      {
+        filename: 'toba-2.jpg',
+        path: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=80' // Samosir Island
+      },
+      {
+        filename: 'toba-3.jpg',
+        path: 'https://images.unsplash.com/photo-1566232392379-afd9298e6a46?w=800&q=80' // Traditional Batak House
       }
     ],
     tags: ['danau', 'budaya', 'alam', 'relaksasi'],
@@ -178,7 +234,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'bandung-1.jpg',
-        path: 'https://picsum.photos/seed/bandung-city-tangkuban/800/600'
+        path: 'https://images.unsplash.com/photo-1606220838315-056192d5e927?w=800&q=80' // Bandung City
+      },
+      {
+        filename: 'bandung-2.jpg',
+        path: 'https://images.unsplash.com/photo-1629716924112-4c2f47799e8d?w=800&q=80' // Tea Plantation
+      },
+      {
+        filename: 'bandung-3.jpg',
+        path: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?w=800&q=80' // Tangkuban Perahu
       }
     ],
     tags: ['shopping', 'kuliner', 'kawah', 'kota'],
@@ -201,7 +265,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'malang-1.jpg',
-        path: 'https://picsum.photos/seed/malang-city-colonial/800/600'
+        path: 'https://images.unsplash.com/photo-1580538872769-d82c8b3d6c6b?w=800&q=80' // Malang City
+      },
+      {
+        filename: 'malang-2.jpg',
+        path: 'https://images.unsplash.com/photo-1578644147691-3d25c62d8b96?w=800&q=80' // Colonial Building
+      },
+      {
+        filename: 'malang-3.jpg',
+        path: 'https://images.unsplash.com/photo-1551244072-5d12893278ab?w=800&q=80' // South Beach
       }
     ],
     tags: ['kota', 'pantai', 'gunung', 'sejarah'],
@@ -224,7 +296,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'belitung-1.jpg',
-        path: 'https://picsum.photos/seed/belitung-granite-beach/800/600'
+        path: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80' // Granite Rocks
+      },
+      {
+        filename: 'belitung-2.jpg',
+        path: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80' // Crystal Beach
+      },
+      {
+        filename: 'belitung-3.jpg',
+        path: 'https://images.unsplash.com/photo-1540206395-68808572332f?w=800&q=80' // Island Hopping
       }
     ],
     tags: ['pantai', 'pulau', 'island hopping', 'snorkeling'],
@@ -234,24 +314,32 @@ const sampleDestinations = [
     isActive: true
   },
   {
-    name: 'Nusa Penida',
+    name: 'Wakatobi',
     country: 'Indonesia',
-    city: 'Bali',
-    description: 'Pulau eksotis dekat Bali dengan tebing dramatis, pantai tersembunyi, dan spot snorkeling dengan manta ray.',
+    city: 'Sulawesi Tenggara',
+    description: 'Taman Nasional bawah laut dengan terumbu karang terbaik di dunia. Surga bagi penyelam dengan visibility air yang sempurna.',
     category: 'Pantai',
     price: {
       currency: 'IDR',
-      min: 800000,
-      max: 3000000
+      min: 6000000,
+      max: 15000000
     },
     images: [
       {
-        filename: 'nusa-penida-1.jpg',
-        path: 'https://picsum.photos/seed/nusa-penida-cliff/800/600'
+        filename: 'wakatobi-1.jpg',
+        path: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80' // Underwater Scene
+      },
+      {
+        filename: 'wakatobi-2.jpg',
+        path: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&q=80' // Coral Reef
+      },
+      {
+        filename: 'wakatobi-3.jpg',
+        path: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&q=80' // Marine Life
       }
     ],
-    tags: ['pantai', 'cliff', 'snorkeling', 'island'],
-    averageRating: 4.8,
+    tags: ['diving', 'snorkeling', 'underwater', 'coral'],
+    averageRating: 5.0,
     totalReviews: 0,
     reviews: [],
     isActive: true
@@ -270,7 +358,15 @@ const sampleDestinations = [
     images: [
       {
         filename: 'bunaken-1.jpg',
-        path: 'https://picsum.photos/seed/bunaken-underwater-diving/800/600'
+        path: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80' // Diving Paradise
+      },
+      {
+        filename: 'bunaken-2.jpg',
+        path: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&q=80' // Wall Diving
+      },
+      {
+        filename: 'bunaken-3.jpg',
+        path: 'https://images.unsplash.com/photo-1546484396-fb3fc6f95f98?w=800&q=80' // Tropical Fish
       }
     ],
     tags: ['diving', 'marine park', 'underwater', 'nature'],
@@ -301,12 +397,11 @@ async function seedDatabase() {
     const count = await Destination.countDocuments();
     console.log(`🔍 Verification: ${count} destinations in database`);
     
-    // Show ALL destinations with images
-    console.log('\n📸 Destinations with images:');
-    const all = await Destination.find();
-    all.forEach((dest, i) => {
-      const imgPath = dest.images[0]?.path || 'NO IMAGE';
-      console.log(`   ${i + 1}. ${dest.name} - ${imgPath.substring(0, 60)}...`);
+    // Show examples
+    const examples = await Destination.find().limit(3);
+    console.log('\n📄 Sample destinations:');
+    examples.forEach(dest => {
+      console.log(`   - ${dest.name} (${dest.category}) - ${dest.country}`);
     });
 
     process.exit(0);

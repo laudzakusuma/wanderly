@@ -4,7 +4,15 @@ import '../styles/DestinationCard.css';
 
 const DestinationCard = ({ destination }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+
+  // Get first image or use placeholder
+  const getImageUrl = () => {
+    if (destination.images && destination.images.length > 0) {
+      return destination.images[0].path;
+    }
+    return 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80'; // Placeholder
+  };
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();
@@ -13,11 +21,14 @@ const DestinationCard = ({ destination }) => {
   };
 
   const formatPrice = (price) => {
+    if (!price || !price.min) return 'Hubungi Kami';
+    
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(price);
+      currency: price.currency || 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price.min);
   };
 
   return (
@@ -29,10 +40,13 @@ const DestinationCard = ({ destination }) => {
           </div>
         )}
         <img
-          src={destination.imageUrl}
+          src={getImageUrl()}
           alt={destination.name}
           className={`card-image ${imageLoaded ? 'loaded' : ''}`}
           onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80';
+          }}
           loading="lazy"
         />
         
@@ -47,11 +61,11 @@ const DestinationCard = ({ destination }) => {
 
         {/* Favorite Button */}
         <button 
-          className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+          className={`favorite-btn ${isFav ? 'active' : ''}`}
           onClick={handleFavoriteClick}
           aria-label="Add to favorites"
         >
-          <svg viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
@@ -67,7 +81,7 @@ const DestinationCard = ({ destination }) => {
             <svg className="rating-icon" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
-            <span>{destination.rating || 4.5}</span>
+            <span>{destination.averageRating || 0}</span>
           </div>
         </div>
 
@@ -84,7 +98,7 @@ const DestinationCard = ({ destination }) => {
         <div className="card-footer">
           <div className="card-price">
             <span className="price-label">From</span>
-            <span className="price-value">{formatPrice(destination.estimatedCost)}</span>
+            <span className="price-value">{formatPrice(destination.price)}</span>
           </div>
           
           <button className="card-cta">
