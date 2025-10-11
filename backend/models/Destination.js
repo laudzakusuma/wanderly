@@ -66,6 +66,11 @@ const DestinationSchema = new mongoose.Schema({
       min: 0
     }
   },
+  // Support both old and new format
+  imageUrl: {
+    type: String,
+    default: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop'
+  },
   images: [{
     filename: String,
     path: String,
@@ -105,6 +110,18 @@ const DestinationSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Virtual untuk mendapatkan image URL (prioritas: images array, fallback: imageUrl)
+DestinationSchema.virtual('primaryImage').get(function() {
+  if (this.images && this.images.length > 0) {
+    return this.images[0].path;
+  }
+  return this.imageUrl;
+});
+
+// Ensure virtuals are included in JSON
+DestinationSchema.set('toJSON', { virtuals: true });
+DestinationSchema.set('toObject', { virtuals: true });
 
 // Method untuk menghitung rata-rata rating
 DestinationSchema.methods.calculateAverageRating = function() {
