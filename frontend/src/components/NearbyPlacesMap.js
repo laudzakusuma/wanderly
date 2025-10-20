@@ -5,7 +5,6 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('restaurant');
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   const placeTypes = [
     { id: 'restaurant', name: 'Restaurants', icon: '🍽️' },
@@ -16,6 +15,7 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
 
   useEffect(() => {
     fetchNearbyPlaces();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [destination, selectedType]);
 
   const fetchNearbyPlaces = async () => {
@@ -38,7 +38,6 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
       console.error('Error fetching nearby places:', error);
     } finally {
       setLoading(false);
-      setMapLoaded(true);
     }
   };
 
@@ -68,7 +67,6 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
       </button>
 
       <div className="map-wrapper">
-        {/* Google Maps Embed */}
         <div className="map-embed">
           <iframe
             title="Destination Map"
@@ -80,14 +78,12 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
           ></iframe>
         </div>
 
-        {/* Nearby Places Sidebar */}
         <div className="nearby-sidebar">
           <div className="sidebar-header">
             <h3>Nearby Places</h3>
             <p className="sidebar-subtitle">Around {destination.name}</p>
           </div>
 
-          {/* Place Type Filters */}
           <div className="place-type-tabs">
             {placeTypes.map(type => (
               <button
@@ -101,7 +97,6 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
             ))}
           </div>
 
-          {/* Places List */}
           <div className="places-list">
             {loading ? (
               <div className="places-loading">
@@ -151,8 +146,7 @@ const NearbyPlacesMap = ({ destination, onClose }) => {
             )}
           </div>
 
-          {/* View on Google Maps */}
-          
+          <a
             href={`https://www.google.com/maps/search/?api=1&query=${destination.location.latitude},${destination.location.longitude}`}
             target="_blank"
             rel="noopener noreferrer"
