@@ -1,4 +1,4 @@
-// frontend/src/components/Navbar.js - COMPLETE REWRITE
+// frontend/src/components/Navbar.js - WITH BODY CLASS TOGGLE
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
@@ -20,14 +20,16 @@ function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  // 🔥 Toggle body class untuk prevent scroll
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('mobile-menu-open');
     } else {
-      document.body.style.overflow = '';
+      document.body.classList.remove('mobile-menu-open');
     }
+    
     return () => {
-      document.body.style.overflow = '';
+      document.body.classList.remove('mobile-menu-open');
     };
   }, [isMobileMenuOpen]);
 
@@ -38,7 +40,7 @@ function Navbar() {
       <div className="container">
         <div className="navbar-content">
           {/* Logo */}
-          <Link to="/" className="navbar-logo">
+          <Link to="/" className="navbar-logo" onClick={() => setIsMobileMenuOpen(false)}>
             <div className="logo-circle">
               <span className="logo-w">W</span>
             </div>
@@ -76,6 +78,7 @@ function Navbar() {
             className={`mobile-toggle ${isMobileMenuOpen ? 'open' : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
           >
             <span></span>
             <span></span>
@@ -87,11 +90,19 @@ function Navbar() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <>
-          <div className="mobile-backdrop" onClick={() => setIsMobileMenuOpen(false)} />
+          <div 
+            className="mobile-backdrop" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
           <div className="mobile-menu">
             <div className="mobile-menu-header">
               <span className="mobile-logo">Wanderly</span>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="mobile-close">
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="mobile-close"
+                aria-label="Close menu"
+              >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <line x1="18" y1="6" x2="6" y2="18" strokeWidth="2"/>
                   <line x1="6" y1="6" x2="18" y2="18" strokeWidth="2"/>

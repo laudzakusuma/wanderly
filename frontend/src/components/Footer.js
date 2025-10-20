@@ -1,6 +1,7 @@
+// frontend/src/components/Footer.js - COMPLETE PROFESSIONAL
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Footer.css';
+import '../styles/Footer.css';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -17,14 +18,17 @@ function Footer() {
                 <path d="M16 8L12 20L16 16L20 20L16 8Z" fill="white" />
                 <defs>
                   <linearGradient id="footer-logo-gradient" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#1d4ed8" />
+                    <stop offset="0%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
                   </linearGradient>
                 </defs>
               </svg>
               <span>Wanderly</span>
             </div>
-            <p>Platform destinasi wisata terbaik untuk menemukan petualangan Anda berikutnya.</p>
+            <p>
+              Platform destinasi wisata terbaik dengan AI Assistant untuk membantu Anda 
+              menemukan petualangan yang sempurna. Jelajahi Indonesia dengan mudah.
+            </p>
             <div className="footer-social">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -41,17 +45,22 @@ function Footer() {
                   <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                 </svg>
               </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Navigation */}
           <div className="footer-section">
             <h4>Navigasi</h4>
             <ul>
               <li><Link to="/">Beranda</Link></li>
               <li><Link to="/destinations">Destinasi</Link></li>
               <li><Link to="/voice-agent">AI Assistant</Link></li>
-              <li><a href="#about">Tentang Kami</a></li>
+              <li><Link to="/favorites">Favorit</Link></li>
             </ul>
           </div>
 
@@ -61,7 +70,7 @@ function Footer() {
             <ul>
               <li><a href="#faq">FAQ</a></li>
               <li><a href="#contact">Hubungi Kami</a></li>
-              <li><a href="#privacy">Kebijakan Privasi</a></li>
+              <li><a href="#privacy">Privasi</a></li>
               <li><a href="#terms">Syarat & Ketentuan</a></li>
             </ul>
           </div>
@@ -96,7 +105,12 @@ function Footer() {
 
         {/* Footer Bottom */}
         <div className="footer-bottom">
-          <p>&copy; {currentYear} Wanderly. Dibuat dengan ❤️ untuk petualangan Anda.</p>
+          <p>&copy; {currentYear} Wanderly.</p>
+          <div className="footer-bottom-links">
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms of Service</a>
+            <a href="#cookies">Cookie Policy</a>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,4 +1,4 @@
-/* frontend/src/styles/Navbar.css - PREMIUM NAVBAR */
+/* frontend/src/styles/Navbar.css - MOBILE MENU PERFECT FIX */
 
 .navbar {
   position: fixed;
@@ -26,13 +26,18 @@
   padding: 1rem 0;
 }
 
-/* Premium Logo */
+/* ===================================
+   LOGO - PREMIUM
+   =================================== */
+
 .navbar-logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1002;
+  position: relative;
 }
 
 .navbar-logo:hover {
@@ -90,7 +95,10 @@
   letter-spacing: -0.03em;
 }
 
-/* Premium Navigation Links */
+/* ===================================
+   DESKTOP MENU
+   =================================== */
+
 .navbar-menu {
   display: flex;
   align-items: center;
@@ -179,63 +187,73 @@
   }
 }
 
-/* Mobile Toggle */
+/* ===================================
+   BURGER MENU - PERFECT ANIMATION
+   =================================== */
+
 .mobile-toggle {
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   width: 44px;
   height: 44px;
-  background: rgba(99, 102, 241, 0.06);
+  background: transparent;
   border: none;
-  border-radius: var(--radius-lg);
   cursor: pointer;
+  padding: 0;
+  z-index: 1002;
   position: relative;
-  transition: all 0.3s ease;
 }
 
-.mobile-toggle:hover {
-  background: rgba(99, 102, 241, 0.1);
+.mobile-toggle:focus {
+  outline: none;
 }
 
 .mobile-toggle span {
-  width: 20px;
-  height: 2px;
+  width: 28px;
+  height: 3px;
   background: #4f46e5;
-  border-radius: 2px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: absolute;
-  left: 12px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative;
+  transform-origin: center;
+  display: block;
+  margin: 0 auto;
 }
 
 .mobile-toggle span:nth-child(1) {
-  top: 14px;
-}
-
-.mobile-toggle span:nth-child(2) {
-  top: 21px;
+  transform: translateY(-8px);
 }
 
 .mobile-toggle span:nth-child(3) {
-  top: 28px;
+  transform: translateY(8px);
 }
 
 .mobile-toggle.open span:nth-child(1) {
-  transform: rotate(45deg);
-  top: 21px;
+  transform: translateY(0) rotate(45deg);
 }
 
 .mobile-toggle.open span:nth-child(2) {
   opacity: 0;
-  transform: translateX(20px);
+  transform: scaleX(0);
 }
 
 .mobile-toggle.open span:nth-child(3) {
-  transform: rotate(-45deg);
-  top: 21px;
+  transform: translateY(0) rotate(-45deg);
 }
 
-/* Mobile Menu */
+.mobile-toggle:hover span {
+  background: #6366f1;
+}
+
+.mobile-toggle.open span {
+  background: white;
+}
+
+/* ===================================
+   MOBILE MENU - PERFECT OVERLAY
+   =================================== */
+
 .mobile-backdrop {
   display: none;
 }
@@ -253,6 +271,7 @@
     display: flex;
   }
 
+  /* 🔥 BACKDROP - Full Screen Perfect */
   .mobile-backdrop {
     display: block;
     position: fixed;
@@ -260,12 +279,27 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
-    z-index: 999;
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
     animation: fadeIn 0.3s ease;
+    overflow: hidden;
   }
 
+  @keyframes fadeIn {
+    from { 
+      opacity: 0;
+    }
+    to { 
+      opacity: 1;
+    }
+  }
+
+  /* 🔥 MOBILE MENU - Perfect Slide */
   .mobile-menu {
     display: flex;
     flex-direction: column;
@@ -273,21 +307,38 @@
     top: 0;
     right: 0;
     width: 85%;
-    max-width: 400px;
-    height: 100%;
+    max-width: 380px;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
     background: white;
     box-shadow: -10px 0 50px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 1001;
     animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Menu Header */
   .mobile-menu-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: linear-gradient(180deg, rgba(99, 102, 241, 0.02) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
+    flex-shrink: 0;
+    min-height: 72px;
   }
 
   .mobile-logo {
@@ -308,10 +359,11 @@
     justify-content: center;
     background: rgba(99, 102, 241, 0.06);
     border: none;
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
     cursor: pointer;
     color: #4f46e5;
     transition: all 0.3s ease;
+    flex-shrink: 0;
   }
 
   .mobile-close:hover {
@@ -319,12 +371,18 @@
     transform: rotate(90deg);
   }
 
+  .mobile-close:active {
+    transform: rotate(90deg) scale(0.9);
+  }
+
+  /* Menu Links */
   .mobile-menu-links {
     flex: 1;
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    overflow-y: auto;
   }
 
   .mobile-link {
@@ -336,7 +394,7 @@
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
-    border-radius: var(--radius-xl);
+    border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     font-family: 'Sora', sans-serif;
@@ -345,12 +403,17 @@
   .mobile-link svg {
     width: 22px;
     height: 22px;
+    flex-shrink: 0;
   }
 
   .mobile-link:hover {
     background: rgba(99, 102, 241, 0.06);
     color: #4f46e5;
     transform: translateX(8px);
+  }
+
+  .mobile-link:active {
+    transform: translateX(4px);
   }
 
   .mobile-link.active {
@@ -363,18 +426,59 @@
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(79, 70, 229, 0.04) 100%);
     border: 2px solid rgba(99, 102, 241, 0.15);
   }
-}
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
+  .mobile-link-featured:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(79, 70, 229, 0.08) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
   }
-  to {
-    transform: translateX(0);
+}
+
+/* 🔥 PREVENT SCROLL WHEN MENU OPEN */
+body.mobile-menu-open {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* 🔥 Safe area for notch devices */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .mobile-menu-header {
+      padding-top: max(1.5rem, calc(env(safe-area-inset-top) + 1rem));
+      padding-left: max(1.5rem, env(safe-area-inset-left));
+      padding-right: max(1.5rem, env(safe-area-inset-right));
+    }
+
+    .mobile-menu-links {
+      padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+    }
+  }
+}
+
+/* 🔥 Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-link {
+    min-height: 56px; /* Better touch target */
+  }
+  
+  .mobile-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 375px) {
+  .mobile-menu {
+    width: 90%;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .mobile-logo {
+    font-size: 1.25rem;
   }
 }
