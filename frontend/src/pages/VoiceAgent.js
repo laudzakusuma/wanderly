@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+// frontend/src/pages/VoiceAgent.js - ALL WARNINGS FIXED
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/VoiceAgent.css';
 
 function VoiceAgent() {
   const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
-  const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [textInput, setTextInput] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -20,32 +21,14 @@ function VoiceAgent() {
   const sessionIdRef = useRef(null);
   const isMountedRef = useRef(true);
 
-  // 🔥 CRITICAL: Hide Navbar & Footer tanpa ubah App.js
+  // ✅ FIX: Body class management
   useEffect(() => {
-    // Find and hide navbar
-    const navbar = document.querySelector('.navbar');
-    const footer = document.querySelector('.footer');
-    const mainContent = document.querySelector('.main-content');
-    
-    // Store original display values
-    const originalNavbarDisplay = navbar ? navbar.style.display : null;
-    const originalFooterDisplay = footer ? footer.style.display : null;
-    const originalMainPadding = mainContent ? mainContent.style.paddingTop : null;
-
-    // Hide navbar & footer
-    if (navbar) navbar.style.display = 'none';
-    if (footer) footer.style.display = 'none';
-    if (mainContent) mainContent.style.paddingTop = '0';
-
-    // Disable body scroll
+    document.body.classList.add('voice-agent-active');
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
 
-    // Cleanup: restore original state
     return () => {
-      if (navbar) navbar.style.display = originalNavbarDisplay || '';
-      if (footer) footer.style.display = originalFooterDisplay || '';
-      if (mainContent) mainContent.style.paddingTop = originalMainPadding || '';
+      document.body.classList.remove('voice-agent-active');
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
       window.speechSynthesis.cancel();
@@ -53,15 +36,114 @@ function VoiceAgent() {
   }, []);
 
   // Auto scroll to bottom
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
-  // Initialize Speech Recognition
+  // ✅ FIX: useCallback untuk handleSendMessage
+  const handleSendMessage = useCallback(async (text) => {
+    if (!text.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      text: text.trim(),
+      timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setTextInput('');
+    setIsTyping(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/voice/text-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: sessionIdRef.current,
+          text: text.trim()
+        })
+      });
+
+      const data = await response.json();
+      
+      setTimeout(() => {
+        setIsTyping(false);
+
+        const aiMessage = {
+          id: Date.now() + 1,
+          type: 'ai',
+          text: data.message,
+          destinations: data.destinations,
+          timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setMessages(prev => [...prev, aiMessage]);
+        
+        // Text-to-speech
+        const utterance = new SpeechSynthesisUtterance(data.message);
+        utterance.lang = 'id-ID';
+        const voices = window.speechSynthesis.getVoices();
+        const indonesianVoice = voices.find(voice => voice.lang === 'id-ID');
+        if (indonesianVoice) utterance.voice = indonesianVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utterance);
+      }, 1000);
+
+    } catch (error) {
+      setIsTyping(false);
+      console.error('Failed to send message:', error);
+      
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        text: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
+        timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  }, []);
+
+  // Recording timer functions
+  const startRecordingTimer = useCallback(() => {
+    setRecordingTime(0);
+    recordingIntervalRef.current = setInterval(() => {
+      setRecordingTime(prev => prev + 1);
+    }, 1000);
+  }, []);
+
+  const stopRecordingTimer = useCallback(() => {
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = null;
+    }
+    setRecordingTime(0);
+  }, []);
+
+  // ✅ FIX: useCallback untuk handleHoldEnd
+  const handleHoldEnd = useCallback((e) => {
+    e.preventDefault();
+    
+    if (isHolding) {
+      setIsHolding(false);
+      stopRecordingTimer();
+      
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    }
+  }, [isHolding, stopRecordingTimer]);
+
+  // ✅ FIX: Speech Recognition dengan proper dependencies
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
@@ -96,7 +178,6 @@ function VoiceAgent() {
         setInterimTranscript('');
         handleSendMessage(final);
         recognition.stop();
-        setIsListening(false);
         setIsHolding(false);
         stopRecordingTimer();
       }
@@ -104,7 +185,6 @@ function VoiceAgent() {
 
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
-      setIsListening(false);
       setIsHolding(false);
       setInterimTranscript('');
       stopRecordingTimer();
@@ -123,7 +203,7 @@ function VoiceAgent() {
         recognitionRef.current.stop();
       }
     };
-  }, [isHolding]);
+  }, [isHolding, handleSendMessage, stopRecordingTimer]);
 
   // Initialize session & greeting
   useEffect(() => {
@@ -190,53 +270,13 @@ function VoiceAgent() {
     };
   }, []);
 
-  // Text-to-speech
-  const speakText = (text) => {
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'id-ID';
-    
-    const voices = window.speechSynthesis.getVoices();
-    const indonesianVoice = voices.find(voice => voice.lang === 'id-ID');
-    if (indonesianVoice) {
-      utterance.voice = indonesianVoice;
-    }
-
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Recording timer
-  const startRecordingTimer = () => {
-    setRecordingTime(0);
-    recordingIntervalRef.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1);
-    }, 1000);
-  };
-
-  const stopRecordingTimer = () => {
-    if (recordingIntervalRef.current) {
-      clearInterval(recordingIntervalRef.current);
-      recordingIntervalRef.current = null;
-    }
-    setRecordingTime(0);
-  };
-
   // Hold-to-talk handlers
-  const handleHoldStart = async (e) => {
+  const handleHoldStart = useCallback(async (e) => {
     e.preventDefault();
     
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setIsHolding(true);
-      setIsListening(true);
       setInterimTranscript('');
       startRecordingTimer();
       
@@ -247,23 +287,9 @@ function VoiceAgent() {
       console.error('Microphone access denied:', error);
       alert('Mohon izinkan akses microphone untuk menggunakan fitur voice');
     }
-  };
+  }, [startRecordingTimer]);
 
-  const handleHoldEnd = (e) => {
-    e.preventDefault();
-    
-    if (isHolding) {
-      setIsHolding(false);
-      setIsListening(false);
-      stopRecordingTimer();
-      
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    }
-  };
-
-  // Global event listeners
+  // ✅ FIX: Global event listeners dengan proper dependencies
   useEffect(() => {
     const handleGlobalMouseUp = (e) => {
       if (isHolding) {
@@ -284,64 +310,7 @@ function VoiceAgent() {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
       document.removeEventListener('touchend', handleGlobalTouchEnd);
     };
-  }, [isHolding]);
-
-  // Send message
-  const handleSendMessage = async (text) => {
-    if (!text.trim()) return;
-
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      text: text.trim(),
-      timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setTextInput('');
-    setIsTyping(true);
-
-    try {
-      const response = await fetch('http://localhost:5000/api/voice/text-query', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: sessionIdRef.current,
-          text: text.trim()
-        })
-      });
-
-      const data = await response.json();
-      
-      setTimeout(() => {
-        setIsTyping(false);
-
-        const aiMessage = {
-          id: Date.now() + 1,
-          type: 'ai',
-          text: data.message,
-          destinations: data.destinations,
-          timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-        };
-
-        setMessages(prev => [...prev, aiMessage]);
-        speakText(data.message);
-      }, 1000);
-
-    } catch (error) {
-      setIsTyping(false);
-      console.error('Failed to send message:', error);
-      
-      const errorMessage = {
-        id: Date.now() + 1,
-        type: 'ai',
-        text: 'Maaf, terjadi kesalahan. Silakan coba lagi.',
-        timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-    }
-  };
+  }, [isHolding, handleHoldEnd]);
 
   const handleTextSubmit = (e) => {
     e.preventDefault();
@@ -401,7 +370,7 @@ function VoiceAgent() {
                 <path d="M50 70c0-5.52 4.48-10 10-10s10 4.48 10 10" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
-            <h3>Halo! Aku Wanderly !</h3>
+            <h3>Halo! Aku Wanderly AI</h3>
             <p>Tahan tombol mikrofon untuk berbicara,<br/>atau ketik pertanyaanmu di bawah</p>
           </div>
         ) : (
@@ -425,7 +394,7 @@ function VoiceAgent() {
                     <div className="destination-cards">
                       {message.destinations.map((dest, idx) => (
                         <div key={idx} className="destination-card-mini">
-                          <img src={dest.image} alt={dest.name} />
+                          <img src={dest.image || 'https://via.placeholder.com/80'} alt={dest.name} />
                           <div className="dest-card-info">
                             <h4>{dest.name}</h4>
                             <p>{dest.description}</p>
