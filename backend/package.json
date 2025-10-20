@@ -1,25 +1,30 @@
 {
   "name": "wanderly-backend",
-  "version": "1.0.0",
-  "description": "Backend API untuk Wanderly Travel Platform",
+  "version": "2.0.0",
+  "description": "Wanderly Travel MVP - Backend API Server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "seed": "node seed.js",
-    "check": "node checkData.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["travel", "destinations", "api"],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "travel",
+    "voice",
+    "ai",
+    "assistant"
+  ],
+  "author": "Wanderly Team",
+  "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
     "express": "^4.18.2",
-    "mongoose": "^7.0.3",
-    "multer": "^1.4.5-lts.1"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

@@ -1,218 +1,166 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import DestinationCard from '../components/DestinationCard';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Destinations.css';
 
-const CATEGORIES = ['All', 'Beach', 'Mountain', 'City', 'Island', 'Desert', 'Forest'];
-const SORT_OPTIONS = [
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'rating', label: 'Highest Rated' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'recent', label: 'Recently Added' }
-];
+function Destinations() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-const Destinations = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [destinations, setDestinations] = useState([]);
-  const [filteredDestinations, setFilteredDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('popular');
-  const [viewMode, setViewMode] = useState('grid');
+  const categories = [
+    { id: 'all', name: 'Semua', icon: '🌍' },
+    { id: 'beach', name: 'Pantai', icon: '🏖️' },
+    { id: 'mountain', name: 'Gunung', icon: '⛰️' },
+    { id: 'city', name: 'Kota', icon: '🏙️' },
+    { id: 'culture', name: 'Budaya', icon: '🏛️' },
+  ];
 
-  // Fetch destinations from API
-  useEffect(() => {
-    const fetchDestinations = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/destinations');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch destinations');
-        }
-        
-        const data = await response.json();
-        setDestinations(data);
-        setFilteredDestinations(data);
-      } catch (err) {
-        setError(err.message);
-        console.error('Error fetching destinations:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDestinations();
-  }, []);
-
-  // Filter and sort destinations
-  useEffect(() => {
-    let result = [...destinations];
-
-    // Filter by search query
-    if (searchQuery) {
-      result = result.filter(dest =>
-        dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dest.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dest.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const destinations = [
+    {
+      id: 1,
+      name: 'Bali',
+      category: 'beach',
+      image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&auto=format',
+      description: 'Pulau Dewata dengan pantai eksotis dan budaya yang kaya',
+      price: 'Mulai dari Rp 2.500.000',
+      rating: 4.8,
+      reviews: 1234
+    },
+    {
+      id: 2,
+      name: 'Raja Ampat',
+      category: 'beach',
+      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&auto=format',
+      description: 'Surga bawah laut dengan keanekaragaman hayati terbaik',
+      price: 'Mulai dari Rp 8.000.000',
+      rating: 5.0,
+      reviews: 892
+    },
+    {
+      id: 3,
+      name: 'Bromo',
+      category: 'mountain',
+      image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&auto=format',
+      description: 'Gunung berapi aktif dengan pemandangan sunrise menakjubkan',
+      price: 'Mulai dari Rp 1.800.000',
+      rating: 4.7,
+      reviews: 2156
+    },
+    {
+      id: 4,
+      name: 'Yogyakarta',
+      category: 'culture',
+      image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&auto=format',
+      description: 'Kota budaya dengan candi Borobudur dan Prambanan',
+      price: 'Mulai dari Rp 1.500.000',
+      rating: 4.6,
+      reviews: 3421
+    },
+    {
+      id: 5,
+      name: 'Labuan Bajo',
+      category: 'beach',
+      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&auto=format',
+      description: 'Gerbang menuju Pulau Komodo dan Pink Beach',
+      price: 'Mulai dari Rp 3.500.000',
+      rating: 4.9,
+      reviews: 1687
+    },
+    {
+      id: 6,
+      name: 'Jakarta',
+      category: 'city',
+      image: 'https://images.unsplash.com/photo-1555899434-94d1eb5ac6db?w=600&auto=format',
+      description: 'Ibu kota modern dengan kehidupan malam yang vibrant',
+      price: 'Mulai dari Rp 1.200.000',
+      rating: 4.3,
+      reviews: 4532
+    },
+    {
+      id: 7,
+      name: 'Lombok',
+      category: 'beach',
+      image: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=600&auto=format',
+      description: 'Pulau dengan pantai pristine dan Gunung Rinjani',
+      price: 'Mulai dari Rp 2.200.000',
+      rating: 4.7,
+      reviews: 1876
+    },
+    {
+      id: 8,
+      name: 'Bandung',
+      category: 'city',
+      image: 'https://images.unsplash.com/photo-1601815060149-8e3bbaf33e6b?w=600&auto=format',
+      description: 'Kota kembang dengan kuliner dan factory outlet',
+      price: 'Mulai dari Rp 900.000',
+      rating: 4.4,
+      reviews: 2945
+    },
+    {
+      id: 9,
+      name: 'Wakatobi',
+      category: 'beach',
+      image: 'https://images.unsplash.com/photo-1583843156871-de22fb3dbcba?w=600&auto=format',
+      description: 'Surga diving dengan terumbu karang spektakuler',
+      price: 'Mulai dari Rp 6.500.000',
+      rating: 4.9,
+      reviews: 723
     }
+  ];
 
-    // Filter by category
-    if (selectedCategory !== 'All') {
-      result = result.filter(dest => dest.category === selectedCategory);
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'rating':
-        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
-      case 'price-low':
-        result.sort((a, b) => a.estimatedCost - b.estimatedCost);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.estimatedCost - a.estimatedCost);
-        break;
-      case 'recent':
-        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
-      default:
-        result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    }
-
-    setFilteredDestinations(result);
-  }, [destinations, searchQuery, selectedCategory, sortBy]);
-
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    setSearchParams(value ? { search: value } : {});
-  };
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-  };
+  const filteredDestinations = destinations.filter(dest => {
+    const matchesSearch = dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         dest.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="destinations-page">
-      {/* Page Header */}
-      <section className="destinations-header">
+      {/* Hero Section */}
+      <section className="destinations-hero">
         <div className="container">
-          <div className="header-content">
-            <div className="header-text">
-              <h1 className="page-title">
-                Explore <span className="title-highlight">Destinations</span>
-              </h1>
-              <p className="page-subtitle">
-                Discover amazing places around the world and plan your next adventure
-              </p>
+          <h1>Jelajahi Destinasi Impian</h1>
+          <p>Temukan destinasi wisata terbaik di Indonesia</p>
+          
+          {/* Search Bar */}
+          <div className="search-container">
+            <div className="search-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="8" strokeWidth="2"/>
+                <path d="m21 21-4.35-4.35" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Cari destinasi..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-
-            <div className="header-stats">
-              <div className="stat-box">
-                <span className="stat-number">{destinations.length}</span>
-                <span className="stat-label">Destinations</span>
-              </div>
-              <div className="stat-box">
-                <span className="stat-number">{filteredDestinations.length}</span>
-                <span className="stat-label">Found</span>
-              </div>
-            </div>
+            <Link to="/voice-agent" className="voice-search-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" strokeWidth="2"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" strokeWidth="2"/>
+              </svg>
+              Cari dengan Suara
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Filters Section */}
-      <section className="filters-section">
+      {/* Categories */}
+      <section className="categories-section">
         <div className="container">
-          <div className="filters-wrapper">
-            {/* Search Bar */}
-            <div className="search-container">
-              <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
-              </svg>
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search destinations, countries..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-              {searchQuery && (
-                <button className="search-clear" onClick={() => setSearchQuery('')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Category Filters */}
-            <div className="category-filters">
-              {CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
-                  onClick={() => handleCategoryChange(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-
-            {/* Sort & View Controls */}
-            <div className="controls-bar">
-              <div className="sort-control">
-                <label htmlFor="sort-select" className="sort-label">Sort by:</label>
-                <select
-                  id="sort-select"
-                  className="sort-select"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="view-toggle">
-                <button
-                  className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                  onClick={() => setViewMode('grid')}
-                  aria-label="Grid view"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="7"/>
-                    <rect x="14" y="3" width="7" height="7"/>
-                    <rect x="14" y="14" width="7" height="7"/>
-                    <rect x="3" y="14" width="7" height="7"/>
-                  </svg>
-                </button>
-                <button
-                  className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-                  onClick={() => setViewMode('list')}
-                  aria-label="List view"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="8" y1="6" x2="21" y2="6"/>
-                    <line x1="8" y1="12" x2="21" y2="12"/>
-                    <line x1="8" y1="18" x2="21" y2="18"/>
-                    <line x1="3" y1="6" x2="3.01" y2="6"/>
-                    <line x1="3" y1="12" x2="3.01" y2="12"/>
-                    <line x1="3" y1="18" x2="3.01" y2="18"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
+          <div className="categories-grid">
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat.id)}
+              >
+                <span className="category-icon">{cat.icon}</span>
+                <span className="category-name">{cat.name}</span>
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -220,59 +168,68 @@ const Destinations = () => {
       {/* Destinations Grid */}
       <section className="destinations-grid-section">
         <div className="container">
-          {loading && (
-            <div className="loading-state">
-              <div className="spinner"></div>
-              <p>Loading amazing destinations...</p>
-            </div>
-          )}
+          <div className="destinations-header">
+            <h2>
+              {selectedCategory === 'all' ? 'Semua Destinasi' : 
+               categories.find(c => c.id === selectedCategory)?.name}
+            </h2>
+            <p>{filteredDestinations.length} destinasi ditemukan</p>
+          </div>
 
-          {error && (
-            <div className="error-state">
-              <svg className="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              <h3>Oops! Something went wrong</h3>
-              <p>{error}</p>
-              <button className="btn btn-primary" onClick={() => window.location.reload()}>
-                Try Again
-              </button>
-            </div>
-          )}
+          {filteredDestinations.length > 0 ? (
+            <div className="destinations-grid">
+              {filteredDestinations.map(dest => (
+                <div key={dest.id} className="destination-card">
+                  <div className="destination-image">
+                    <img src={dest.image} alt={dest.name} />
+                    <div className="destination-overlay">
+                      <button className="btn-favorite">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="destination-content">
+                    <h3>{dest.name}</h3>
+                    <p>{dest.description}</p>
+                    
+                    <div className="destination-meta">
+                      <div className="rating">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        <span>{dest.rating}</span>
+                        <span className="reviews">({dest.reviews})</span>
+                      </div>
+                      <div className="price">{dest.price}</div>
+                    </div>
 
-          {!loading && !error && filteredDestinations.length === 0 && (
-            <div className="empty-state">
-              <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35"/>
-              </svg>
-              <h3>No destinations found</h3>
-              <p>Try adjusting your search or filters</p>
-              <button 
-                className="btn btn-primary"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('All');
-                }}
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && filteredDestinations.length > 0 && (
-            <div className={`destinations-grid ${viewMode}`}>
-              {filteredDestinations.map((destination) => (
-                <DestinationCard key={destination._id} destination={destination} />
+                    <div className="destination-actions">
+                      <button className="btn btn-outline btn-sm">Detail</button>
+                      <button className="btn btn-primary btn-sm">Booking</button>
+                    </div>
+                  </div>
+                </div>
               ))}
+            </div>
+          ) : (
+            <div className="empty-results">
+              <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                <path d="M60 30c-16.57 0-30 13.43-30 30s13.43 30 30 30 30-13.43 30-30-13.43-30-30-30zm0 54c-13.23 0-24-10.77-24-24s10.77-24 24-24 24 10.77 24 24-10.77 24-24 24z" fill="#9ca3af"/>
+              </svg>
+              <h3>Tidak Ada Hasil</h3>
+              <p>Coba kata kunci lain atau gunakan AI Assistant untuk pencarian yang lebih baik</p>
+              <Link to="/voice-agent" className="btn btn-primary">
+                Coba AI Assistant
+              </Link>
             </div>
           )}
         </div>
       </section>
     </div>
   );
-};
+}
 
 export default Destinations;

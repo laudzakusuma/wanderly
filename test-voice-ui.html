@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wanderly Voice Agent - Speech Input</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 900px;
+      width: 100%;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .feature-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .status-card {
+      flex: 1;
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .status-card.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-card.recording {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .status-label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #666;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      font-family: monospace;
+      background: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      display: inline-block;
+      word-break: break-all;
+      font-size: 13px;
+    }
+
+    .chat-container {
+      height: 450px;
+      overflow-y: auto;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      max-width: 80%;
+      animation: fadeIn 0.3s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      background: #667eea;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .message.ai {
+      background: white;
+      color: #333;
+      border: 1px solid #e0e0e0;
+    }
+
+    .message.system {
+      background: #fff3cd;
+      color: #856404;
+      text-align: center;
+      margin: 0 auto;
+      font-size: 14px;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .message.transcribing {
+      background: #e3f2fd;
+      color: #1565c0;
+      font-style: italic;
+    }
+
+    .message-time {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-top: 5px;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    input {
+      flex: 1;
+      padding: 15px 60px 15px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    input:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+    }
+
+    .mic-button {
+      position: absolute;
+      right: 120px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .mic-button:hover:not(:disabled) {
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .mic-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .mic-button.recording {
+      background: #dc3545;
+      animation: recording-pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes recording-pulse {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.15); }
+    }
+
+    .mic-button svg {
+      width: 22px;
+      height: 22px;
+      color: white;
+    }
+
+    button {
+      padding: 15px 30px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quick-btn {
+      padding: 12px 20px;
+      background: white;
+      border: 2px solid #667eea;
+      color: #667eea;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: left;
+    }
+
+    .quick-btn:hover:not(:disabled) {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .quick-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .voice-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .voice-status.active {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .voice-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #6c757d;
+    }
+
+    .voice-indicator.active {
+      background: #28a745;
+      box-shadow: 0 0 10px #28a745;
+    }
+
+    .voice-indicator.recording {
+      background: #dc3545;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .destinations-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .destination-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .destination-name {
+      font-weight: 600;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .browser-support {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .browser-support.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span>🎙️</span>
+      <span>Wanderly Voice Agent</span>
+    </h1>
+    <p class="subtitle">AI Booking Assistant with Speech Recognition</p>
+    <span class="feature-badge">✨ NEW: Voice Input Enabled</span>
+
+    <div class="browser-support" id="browserSupport">
+      ⚠️ Browser kamu tidak support Web Speech API. Gunakan Google Chrome untuk fitur voice.
+    </div>
+
+    <div class="voice-status" id="voiceStatus">
+      <div class="voice-indicator" id="voiceIndicator"></div>
+      <div>
+        <strong>Voice Recognition:</strong>
+        <span id="voiceStatusText">Ready</span>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-card" id="statusCard">
+        <div class="status-label">Status</div>
+        <div class="status-value" id="status">Disconnected</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Session ID</div>
+        <div class="status-value" id="sessionId">-</div>
+      </div>
+      <div class="status-card" id="recordingCard" style="display:none;">
+        <div class="status-label">Recording</div>
+        <div class="status-value" id="recordingStatus">🎤 Listening...</div>
+      </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="message system">
+        👋 Klik "Start Session" untuk memulai percakapan dengan AI<br>
+        🎤 Setelah connect, klik tombol microphone untuk ngomong langsung!
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input 
+        type="text" 
+        id="messageInput" 
+        placeholder="Ketik pesan atau klik 🎤 untuk ngomong..."
+        disabled
+      >
+      <button class="mic-button" id="micBtn" disabled title="Click to speak">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+      <button id="sendBtn" disabled>Send</button>
+    </div>
+
+    <div class="quick-actions">
+      <button class="quick-btn" id="startBtn" style="border-color: #28a745; color: #28a745;">
+        ▶️ Start Session
+      </button>
+      <button class="quick-btn" id="btn1" onclick="sendQuick('Aku mau ke Bali budget 5 juta')" disabled>
+        🏝️ Cari Destinasi Bali
+      </button>
+      <button class="quick-btn" id="btn2" onclick="sendQuick('Mau booking Nusa Penida')" disabled>
+        📅 Booking Nusa Penida
+      </button>
+      <button class="quick-btn" id="btn3" onclick="sendQuick('Tolong carikan destinasi gunung yang murah')" disabled>
+        ⛰️ Cari Gunung Murah
+      </button>
+      <button class="quick-btn" onclick="clearChat()">
+        🗑️ Clear Chat
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let sessionId = null;
+    let recognition = null;
+    let isRecording = false;
+    const API_BASE = 'http://localhost:5000/api';
+
+    const chatContainer = document.getElementById('chatContainer');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const startBtn = document.getElementById('startBtn');
+    const micBtn = document.getElementById('micBtn');
+    const sessionIdEl = document.getElementById('sessionId');
+    const statusEl = document.getElementById('status');
+    const statusCard = document.getElementById('statusCard');
+    const recordingCard = document.getElementById('recordingCard');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceIndicator = document.getElementById('voiceIndicator');
+    const voiceStatusText = document.getElementById('voiceStatusText');
+    const browserSupport = document.getElementById('browserSupport');
+
+    // Check browser support for Web Speech API
+    function checkSpeechSupport() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        initSpeechRecognition();
+        voiceStatusText.textContent = 'Ready (Click mic to speak)';
+        voiceIndicator.classList.add('active');
+        return true;
+      } else {
+        browserSupport.classList.add('show');
+        voiceStatusText.textContent = 'Not Supported';
+        micBtn.disabled = true;
+        micBtn.title = 'Speech recognition not supported';
+        return false;
+      }
+    }
+
+    // Initialize Speech Recognition
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      
+      recognition.lang = 'id-ID'; // Indonesian
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add('recording');
+        voiceIndicator.classList.add('recording');
+        voiceStatusText.textContent = '🎤 Listening...';
+        recordingCard.style.display = 'block';
+        recordingCard.classList.add('recording');
+        
+        addMessage('🎤 Mendengarkan... (Silakan berbicara)', 'transcribing');
+      };
+
+      recognition.onresult = (event) => {
+        const results = event.results;
+        const transcript = results[results.length - 1][0].transcript;
+        
+        if (results[results.length - 1].isFinal) {
+          // Remove "listening" message
+          const lastMsg = chatContainer.lastChild;
+          if (lastMsg && lastMsg.classList.contains('transcribing')) {
+            chatContainer.removeChild(lastMsg);
+          }
+          
+          // Send the transcribed text
+          messageInput.value = transcript;
+          sendMessage();
+        } else {
+          // Update interim results
+          const lastMsg = chatContainer.lastChild;
+          if (lastMsg && lastMsg.classList.contains('transcribing')) {
+            lastMsg.textContent = `🎤 "${transcript}"`;
+          }
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        
+        let errorMsg = 'Error: ';
+        switch(event.error) {
+          case 'no-speech':
+            errorMsg += 'Tidak terdengar suara. Coba lagi!';
+            break;
+          case 'audio-capture':
+            errorMsg += 'Microphone tidak ditemukan.';
+            break;
+          case 'not-allowed':
+            errorMsg += 'Akses microphone ditolak. Allow microphone di browser settings.';
+            break;
+          default:
+            errorMsg += event.error;
+        }
+        
+        addMessage(errorMsg, 'error');
+        stopRecording();
+      };
+
+      recognition.onend = () => {
+        stopRecording();
+      };
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      micBtn.classList.remove('recording');
+      voiceIndicator.classList.remove('recording');
+      voiceStatusText.textContent = 'Ready (Click mic to speak)';
+      recordingCard.style.display = 'none';
+      recordingCard.classList.remove('recording');
+    }
+
+    // Mic button click handler
+    micBtn.addEventListener('click', () => {
+      if (!sessionId) {
+        alert('Please start session first!');
+        return;
+      }
+
+      if (!recognition) {
+        alert('Speech recognition not supported in this browser. Use Google Chrome!');
+        return;
+      }
+
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    // Start session
+    startBtn.addEventListener('click', async () => {
+      try {
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<span class="loading"></span> Connecting...';
+        statusEl.textContent = 'Connecting...';
+
+        const response = await fetch(`${API_BASE}/voice/start`, {
+          method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          sessionId = data.sessionId;
+          sessionIdEl.textContent = sessionId.substring(0, 8) + '...';
+          statusEl.textContent = 'Connected ✅';
+          statusCard.classList.add('success');
+          
+          addMessage(data.greeting, 'ai');
+          
+          messageInput.disabled = false;
+          sendBtn.disabled = false;
+          micBtn.disabled = false; // Enable mic button
+          document.getElementById('btn1').disabled = false;
+          document.getElementById('btn2').disabled = false;
+          document.getElementById('btn3').disabled = false;
+          messageInput.focus();
+
+          startBtn.textContent = '✅ Session Active';
+          startBtn.style.borderColor = '#28a745';
+          startBtn.style.color = '#28a745';
+          
+          // Highlight voice feature
+          voiceStatus.classList.add('active');
+        } else {
+          throw new Error(data.message || 'Failed to start session');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        addMessage('❌ Error: ' + error.message, 'error');
+        statusEl.textContent = 'Error ❌';
+        startBtn.disabled = false;
+        startBtn.textContent = '▶️ Retry Start Session';
+      }
+    });
+
+    // Send message
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message || !sessionId) return;
+
+      addMessage(message, 'user');
+      messageInput.value = '';
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span class="loading"></span>';
+
+      try {
+        const response = await fetch(`${API_BASE}/voice/text-query`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, message })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          addMessage(data.response, 'ai');
+
+          if (data.data && data.data.destinations) {
+            showDestinations(data.data.destinations);
+          }
+        } else {
+          addMessage('❌ Error: ' + (data.error || data.message), 'error');
+        }
+      } catch (error) {
+        addMessage('❌ Network Error: ' + error.message, 'error');
+      }
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send';
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendQuick(message) {
+      if (!sessionId) {
+        alert('Please start session first!');
+        return;
+      }
+      messageInput.value = message;
+      sendMessage();
+    }
+
+    function addMessage(text, type) {
+      const div = document.createElement('div');
+      div.className = `message ${type}`;
+      
+      const textNode = document.createTextNode(text);
+      div.appendChild(textNode);
+      
+      const time = document.createElement('div');
+      time.className = 'message-time';
+      time.textContent = new Date().toLocaleTimeString('id-ID');
+      div.appendChild(time);
+      
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showDestinations(destinations) {
+      if (!destinations || destinations.length === 0) return;
+      
+      const grid = document.createElement('div');
+      grid.className = 'destinations-grid';
+      
+      destinations.forEach(dest => {
+        const card = document.createElement('div');
+        card.className = 'destination-card';
+        card.innerHTML = `
+          <div class="destination-name">${dest.name}</div>
+          <div>📍 ${dest.location}</div>
+          <div>💰 ${dest.priceRange}</div>
+          <div>⭐ Rating: ${dest.rating}/5</div>
+        `;
+        grid.appendChild(card);
+      });
+      
+      chatContainer.lastChild.appendChild(grid);
+    }
+
+    function clearChat() {
+      chatContainer.innerHTML = '<div class="message system">Chat cleared</div>';
+    }
+
+    // Initialize speech support on load
+    checkSpeechSupport();
+  </script>
+</body>
+</html>
