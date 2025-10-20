@@ -1,4 +1,4 @@
-/* frontend/src/styles/Navbar.css - ULTIMATE MOBILE MENU FIX */
+/* frontend/src/styles/Navbar.css - MOBILE MENU FIXED & CLEAN */
 
 .navbar {
   position: fixed;
@@ -24,6 +24,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 0;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 /* ===================================
@@ -94,6 +98,7 @@
   background-clip: text;
   font-family: 'Sora', sans-serif;
   letter-spacing: -0.03em;
+  transition: opacity 0.3s ease;
 }
 
 /* ===================================
@@ -164,7 +169,8 @@
 .mobile-toggle {
   display: none;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
   width: 44px;
   height: 44px;
   background: transparent;
@@ -173,30 +179,20 @@
   padding: 0;
   z-index: 1002;
   position: relative;
+  gap: 6px;
 }
 
 .mobile-toggle span {
-  width: 28px;
-  height: 3px;
+  width: 24px;
+  height: 2.5px;
   background: #4f46e5;
   border-radius: 10px;
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-  position: relative;
-  transform-origin: center;
   display: block;
-  margin: 0 auto;
-}
-
-.mobile-toggle span:nth-child(1) {
-  transform: translateY(-8px);
-}
-
-.mobile-toggle span:nth-child(3) {
-  transform: translateY(8px);
 }
 
 .mobile-toggle.open span:nth-child(1) {
-  transform: translateY(0) rotate(45deg);
+  transform: translateY(8.5px) rotate(45deg);
   background: white;
 }
 
@@ -206,7 +202,7 @@
 }
 
 .mobile-toggle.open span:nth-child(3) {
-  transform: translateY(0) rotate(-45deg);
+  transform: translateY(-8.5px) rotate(-45deg);
   background: white;
 }
 
@@ -219,10 +215,15 @@
 }
 
 /* ===================================
-   MOBILE RESPONSIVE - COMPLETE FIX
+   MOBILE RESPONSIVE - CLEAN & FIXED
    =================================== */
 
 @media (max-width: 768px) {
+  .navbar-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   .navbar-menu {
     display: none;
   }
@@ -231,7 +232,7 @@
     display: flex;
   }
 
-  /* 🔥 HIDE MAIN LOGO TEXT ON MOBILE WHEN MENU OPEN */
+  /* 🔥 HIDE LOGO TEXT WHEN MENU OPEN */
   body.mobile-menu-open .logo-text {
     opacity: 0;
     pointer-events: none;
@@ -260,7 +261,7 @@
     to { opacity: 1; }
   }
 
-  /* 🔥 MOBILE MENU - PERFECT LAYOUT */
+  /* 🔥 MOBILE MENU - CLEAN LAYOUT */
   .mobile-menu {
     display: flex;
     flex-direction: column;
@@ -268,15 +269,14 @@
     top: 0;
     right: 0;
     width: 85%;
-    max-width: 380px;
+    max-width: 360px;
     height: 100vh;
     height: 100dvh;
     background: white;
     box-shadow: -10px 0 50px rgba(0, 0, 0, 0.15);
     z-index: 1001;
     animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   @keyframes slideInRight {
@@ -290,43 +290,25 @@
     }
   }
 
-  /* 🔥 MOBILE MENU HEADER - CLEAN SIMPLE */
+  /* 🔥 MOBILE MENU HEADER - CLEAN */
   .mobile-menu-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     background: linear-gradient(180deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
     flex-shrink: 0;
-    min-height: 76px;
+    min-height: 72px;
   }
 
-  /* 🔥 MOBILE LOGO - CLEAN & SIMPLE */
+  /* 🔥 MOBILE LOGO - SIMPLE */
   .mobile-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     font-weight: 800;
     font-family: 'Sora', sans-serif;
     letter-spacing: -0.03em;
     line-height: 1;
-  }
-
-  .mobile-logo::before {
-    content: '';
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    border-radius: 50%;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  }
-
-  .mobile-logo::after {
-    content: 'Wanderly';
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -334,14 +316,14 @@
   }
 
   .mobile-close {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(99, 102, 241, 0.06);
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     color: #4f46e5;
     transition: all 0.3s ease;
@@ -349,7 +331,7 @@
   }
 
   .mobile-close:hover {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(99, 102, 241, 0.12);
     transform: rotate(90deg);
   }
 
@@ -357,7 +339,7 @@
     transform: rotate(90deg) scale(0.9);
   }
 
-  /* Menu Links */
+  /* 🔥 MENU LINKS - CLEAN LAYOUT */
   .mobile-menu-links {
     flex: 1;
     padding: 1.5rem 1rem;
@@ -365,6 +347,7 @@
     flex-direction: column;
     gap: 0.5rem;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .mobile-link {
@@ -416,15 +399,17 @@
     border-color: rgba(99, 102, 241, 0.3);
   }
 
-  /* 🔥 Badge NEW - Perfect Position for Mobile */
-  .mobile-link-featured .badge-new {
+  /* 🔥 Badge NEW - Clean Position */
+  .mobile-link .badge-new {
     position: static;
     margin-left: auto;
     transform: none;
+    padding: 4px 8px;
+    font-size: 0.625rem;
   }
 }
 
-/* 🔥 BODY LOCK - Prevent scroll when menu open */
+/* 🔥 BODY LOCK */
 body.mobile-menu-open {
   overflow: hidden !important;
   position: fixed;
@@ -432,42 +417,39 @@ body.mobile-menu-open {
   height: 100%;
 }
 
-/* 🔥 PWA Safe Area Support */
-@supports (padding: max(0px)) {
-  @media (max-width: 768px) {
-    .mobile-menu-header {
-      padding-top: max(1.5rem, calc(env(safe-area-inset-top) + 1rem));
-      padding-left: max(1.5rem, env(safe-area-inset-left));
-      padding-right: max(1.5rem, env(safe-area-inset-right));
-    }
-
-    .mobile-menu-links {
-      padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
-      padding-left: max(1rem, env(safe-area-inset-left));
-      padding-right: max(1rem, env(safe-area-inset-right));
-    }
-  }
-}
-
 /* 🔥 Small Devices */
 @media (max-width: 375px) {
+  .navbar-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+  }
+
   .mobile-menu {
     width: 90%;
   }
 
-  .mobile-logo::after {
-    font-size: 1.25rem;
+  .mobile-menu-header {
+    padding: 1rem 1.25rem;
+    min-height: 68px;
   }
 
-  .mobile-menu-header {
-    padding: 1rem;
-    min-height: 70px;
+  .mobile-logo {
+    font-size: 1.25rem;
   }
 
   .mobile-link {
     padding: 0.875rem 1rem;
     font-size: 0.9375rem;
     min-height: 52px;
+  }
+
+  .badge-new {
+    font-size: 0.5625rem;
+    padding: 3px 6px;
   }
 }
 
@@ -477,18 +459,17 @@ body.mobile-menu-open {
     width: 95%;
   }
 
-  .mobile-logo::before {
-    width: 36px;
-    height: 36px;
+  .logo-circle {
+    width: 40px;
+    height: 40px;
   }
 
-  .mobile-logo::after {
+  .logo-w {
+    font-size: 1.375rem;
+  }
+
+  .logo-text {
     font-size: 1.125rem;
-  }
-
-  .badge-new {
-    font-size: 0.5625rem;
-    padding: 2px 6px;
   }
 }
 
@@ -508,20 +489,26 @@ body.mobile-menu-open {
     padding: 0.75rem 1rem;
     min-height: 48px;
   }
+}
 
-  .mobile-logo::after {
-    font-size: 1.125rem;
+/* 🔥 PWA Safe Area */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .mobile-menu-header {
+      padding-top: max(1.25rem, calc(env(safe-area-inset-top) + 0.5rem));
+      padding-left: max(1.5rem, env(safe-area-inset-left));
+      padding-right: max(1.5rem, env(safe-area-inset-right));
+    }
+
+    .mobile-menu-links {
+      padding-bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
   }
 }
 
-/* 🔥 PWA Standalone */
-@media (display-mode: standalone) {
-  .navbar {
-    padding-top: env(safe-area-inset-top);
-  }
-}
-
-/* 🔥 Accessibility - High Contrast */
+/* 🔥 Accessibility */
 @media (prefers-contrast: high) {
   .mobile-link {
     border: 1px solid transparent;
@@ -533,7 +520,6 @@ body.mobile-menu-open {
   }
 }
 
-/* 🔥 Accessibility - Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .mobile-menu,
   .mobile-backdrop,

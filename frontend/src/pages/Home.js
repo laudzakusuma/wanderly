@@ -1,8 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getDestinations } from '../services/api';
 import '../styles/Home.css';
 
 function Home() {
+  const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch destinations from backend
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        setLoading(true);
+        const response = await getDestinations();
+        
+        if (response && response.data) {
+          setDestinations(response.data);
+        }
+      } catch (err) {
+        console.error('Error fetching destinations:', err);
+        setError('Failed to load destinations');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
+
   // Scroll animation observer
   useEffect(() => {
     const observerOptions = {
@@ -24,251 +50,154 @@ function Home() {
     return () => {
       animatedElements.forEach(el => observer.unobserve(el));
     };
-  }, []);
+  }, [destinations]);
 
-  // Beach Destinations
-  const beachDestinations = [
-    {
-      id: 1,
-      name: 'Bali',
-      image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&h=400&fit=crop',
-      price: 'Rp 2.500.000',
-      rating: 4.8,
-      reviews: 1234,
-      location: 'Bali, Indonesia'
-    },
-    {
-      id: 2,
-      name: 'Raja Ampat',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-      price: 'Rp 8.000.000',
-      rating: 5.0,
-      reviews: 892,
-      location: 'Papua Barat'
-    },
-    {
-      id: 3,
-      name: 'Lombok',
-      image: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=600&h=400&fit=crop',
-      price: 'Rp 2.200.000',
-      rating: 4.7,
-      reviews: 1876,
-      location: 'Nusa Tenggara'
-    },
-    {
-      id: 4,
-      name: 'Labuan Bajo',
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop',
-      price: 'Rp 3.500.000',
-      rating: 4.9,
-      reviews: 1687,
-      location: 'Flores'
-    },
-    {
-      id: 5,
-      name: 'Nusa Penida',
-      image: 'https://images.unsplash.com/photo-1580837119756-563d608dd119?w=600&h=400&fit=crop',
-      price: 'Rp 1.800.000',
-      rating: 4.6,
-      reviews: 2134,
-      location: 'Bali'
-    },
-    {
-      id: 6,
-      name: 'Belitung',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop',
-      price: 'Rp 2.800.000',
-      rating: 4.8,
-      reviews: 956,
-      location: 'Bangka Belitung'
-    }
-  ];
+  // Categorize destinations
+  const beachDestinations = destinations.filter(d => d.category === 'Pantai').slice(0, 6);
+  const mountainDestinations = destinations.filter(d => d.category === 'Gunung').slice(0, 6);
+  const culturalDestinations = destinations.filter(d => d.category === 'Sejarah').slice(0, 6);
+  const promoDestinations = destinations.filter(d => d.price?.min < 2000000).slice(0, 6);
 
-  // Mountain Destinations
-  const mountainDestinations = [
-    {
-      id: 1,
-      name: 'Bromo',
-      image: 'https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=600&h=400&fit=crop',
-      price: 'Rp 1.800.000',
-      rating: 4.7,
-      reviews: 2156,
-      location: 'Jawa Timur'
-    },
-    {
-      id: 2,
-      name: 'Rinjani',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-      price: 'Rp 2.500.000',
-      rating: 4.9,
-      reviews: 1432,
-      location: 'Lombok'
-    },
-    {
-      id: 3,
-      name: 'Semeru',
-      image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&h=400&fit=crop',
-      price: 'Rp 2.200.000',
-      rating: 4.8,
-      reviews: 987,
-      location: 'Jawa Timur'
-    },
-    {
-      id: 4,
-      name: 'Merbabu',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-      price: 'Rp 1.500.000',
-      rating: 4.6,
-      reviews: 1245,
-      location: 'Jawa Tengah'
-    },
-    {
-      id: 5,
-      name: 'Kerinci',
-      image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=600&h=400&fit=crop',
-      price: 'Rp 3.200.000',
-      rating: 4.7,
-      reviews: 678,
-      location: 'Jambi'
-    },
-    {
-      id: 6,
-      name: 'Gede Pangrango',
-      image: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&h=400&fit=crop',
-      price: 'Rp 1.200.000',
-      rating: 4.5,
-      reviews: 1543,
-      location: 'Jawa Barat'
-    }
-  ];
+  // Format price
+  const formatPrice = (price) => {
+    if (!price || !price.min) return 'Hubungi kami';
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: price.currency || 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price.min);
+  };
 
-  // Cultural Destinations
-  const culturalDestinations = [
-    {
-      id: 1,
-      name: 'Yogyakarta',
-      image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&h=400&fit=crop',
-      price: 'Rp 1.500.000',
-      rating: 4.6,
-      reviews: 3421,
-      location: 'Yogyakarta'
-    },
-    {
-      id: 2,
-      name: 'Ubud',
-      image: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=600&h=400&fit=crop',
-      price: 'Rp 2.000.000',
-      rating: 4.7,
-      reviews: 2876,
-      location: 'Bali'
-    },
-    {
-      id: 3,
-      name: 'Toraja',
-      image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600&h=400&fit=crop',
-      price: 'Rp 3.500.000',
-      rating: 4.8,
-      reviews: 1234,
-      location: 'Sulawesi Selatan'
-    },
-    {
-      id: 4,
-      name: 'Solo',
-      image: 'https://images.unsplash.com/photo-1601815060149-8e3bbaf33e6b?w=600&h=400&fit=crop',
-      price: 'Rp 1.200.000',
-      rating: 4.5,
-      reviews: 1987,
-      location: 'Jawa Tengah'
-    },
-    {
-      id: 5,
-      name: 'Borobudur',
-      image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=600&h=400&fit=crop',
-      price: 'Rp 2.300.000',
-      rating: 4.9,
-      reviews: 3456,
-      location: 'Yogyakarta'
-    },
-    {
-      id: 6,
-      name: 'Prambanan',
-      image: 'https://images.unsplash.com/photo-1591606663918-baa05f46eb74?w=600&h=400&fit=crop',
-      price: 'Rp 900.000',
-      rating: 4.4,
-      reviews: 2134,
-      location: 'Yogyakarta'
-    }
-  ];
+  // Render destination card
+  const renderDestinationCard = (dest) => (
+    <Link to={`/destinations/${dest._id}`} key={dest._id} className="travel-card">
+      <div className="travel-card-image">
+        <img 
+          src={dest.imageUrl || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600'} 
+          alt={dest.name} 
+          loading="lazy"
+          onError={(e) => {
+            e.target.src = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600';
+          }}
+        />
+        <button className="btn-wishlist-card" onClick={(e) => e.preventDefault()}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
+          </svg>
+        </button>
+      </div>
+      <div className="travel-card-content">
+        <div className="card-location-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
+          </svg>
+          {dest.city}, {dest.country}
+        </div>
+        <h3>{dest.name}</h3>
+        <div className="card-rating-row">
+          <div className="rating-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span>{dest.averageRating || 4.5}</span>
+          </div>
+          <span className="reviews-count">({dest.totalReviews || 0} reviews)</span>
+        </div>
+        <div className="card-price-row">
+          <span className="price-label">From</span>
+          <span className="price-amount">{formatPrice(dest.price)}</span>
+        </div>
+        <button className="btn-book-card" onClick={(e) => e.preventDefault()}>
+          View Details
+        </button>
+      </div>
+    </Link>
+  );
 
-  // Promo Destinations
-  const promoDestinations = [
-    {
-      id: 1,
-      name: 'Danau Toba',
-      image: 'https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=600&h=400&fit=crop',
-      price: 'Rp 1.600.000',
-      originalPrice: 'Rp 2.000.000',
-      discount: 20,
-      rating: 4.6,
-      reviews: 876,
-      location: 'Sumatera Utara'
-    },
-    {
-      id: 2,
-      name: 'Malang',
-      image: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600&h=400&fit=crop',
-      price: 'Rp 1.200.000',
-      originalPrice: 'Rp 1.600.000',
-      discount: 25,
-      rating: 4.5,
-      reviews: 1234,
-      location: 'Jawa Timur'
-    },
-    {
-      id: 3,
-      name: 'Bandung',
-      image: 'https://images.unsplash.com/photo-1601815060149-8e3bbaf33e6b?w=600&h=400&fit=crop',
-      price: 'Rp 900.000',
-      originalPrice: 'Rp 1.300.000',
-      discount: 30,
-      rating: 4.4,
-      reviews: 2456,
-      location: 'Jawa Barat'
-    },
-    {
-      id: 4,
-      name: 'Wakatobi',
-      image: 'https://images.unsplash.com/photo-1583843156871-de22fb3dbcba?w=600&h=400&fit=crop',
-      price: 'Rp 5.500.000',
-      originalPrice: 'Rp 6.500.000',
-      discount: 15,
-      rating: 4.9,
-      reviews: 723,
-      location: 'Sulawesi Tenggara'
-    },
-    {
-      id: 5,
-      name: 'Derawan',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400&fit=crop',
-      price: 'Rp 4.200.000',
-      originalPrice: 'Rp 5.000.000',
-      discount: 16,
-      rating: 4.8,
-      reviews: 654,
-      location: 'Kalimantan Timur'
-    },
-    {
-      id: 6,
-      name: 'Sumba',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-      price: 'Rp 3.400.000',
-      originalPrice: 'Rp 4.000.000',
-      discount: 15,
-      rating: 4.7,
-      reviews: 543,
-      location: 'Nusa Tenggara Timur'
-    }
-  ];
+  // Loading state
+  if (loading) {
+    return (
+      <div className="home-page-travel">
+        <div style={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <div className="spinner" style={{ 
+            width: '64px', 
+            height: '64px', 
+            border: '4px solid #e5e7eb',
+            borderTopColor: '#6366f1',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite'
+          }}></div>
+          <p style={{ color: '#6b7280', fontSize: '1.125rem', fontWeight: 600 }}>
+            Loading destinations...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="home-page-travel">
+        <div style={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px',
+          padding: '20px'
+        }}>
+          <div style={{ fontSize: '4rem' }}>❌</div>
+          <h2 style={{ color: '#ef4444', margin: 0 }}>Failed to Load</h2>
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>{error}</p>
+          <button 
+            className="btn-cta-travel" 
+            onClick={() => window.location.reload()}
+            style={{ marginTop: '20px' }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (destinations.length === 0) {
+    return (
+      <div className="home-page-travel">
+        <div style={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '20px'
+        }}>
+          <div style={{ fontSize: '4rem' }}>🏝️</div>
+          <h2 style={{ color: '#1f2937', margin: 0 }}>No Destinations Available</h2>
+          <p style={{ color: '#6b7280' }}>Please run the seed script to populate destinations.</p>
+          <code style={{ 
+            background: '#f3f4f6', 
+            padding: '10px 20px', 
+            borderRadius: '8px',
+            fontFamily: 'monospace'
+          }}>
+            cd backend && npm run seed
+          </code>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="home-page-travel">
@@ -304,7 +233,7 @@ function Home() {
 
             <div className="hero-stats-travel">
               <div className="stat-box">
-                <div className="stat-number">1,000+</div>
+                <div className="stat-number">{destinations.length}+</div>
                 <div className="stat-label">Destinations</div>
               </div>
               <div className="stat-box">
@@ -321,205 +250,115 @@ function Home() {
       </section>
 
       {/* Beach Destinations */}
-      <section className="destinations-row animate-on-scroll">
-        <div className="container">
-          <div className="row-header">
-            <div className="row-title-group">
-              <h2>Beach & Island Destinations</h2>
-              <p>Explore pristine beaches and tropical paradises</p>
+      {beachDestinations.length > 0 && (
+        <section className="destinations-row animate-on-scroll">
+          <div className="container">
+            <div className="row-header">
+              <div className="row-title-group">
+                <h2>Beach & Island Destinations</h2>
+                <p>Explore pristine beaches and tropical paradises</p>
+              </div>
+            </div>
+            <div className="cards-horizontal-scroll">
+              {beachDestinations.map(renderDestinationCard)}
             </div>
           </div>
-
-          <div className="cards-horizontal-scroll">
-            {beachDestinations.map((dest) => (
-              <div key={dest.id} className="travel-card">
-                <div className="travel-card-image">
-                  <img src={dest.image} alt={dest.name} loading="lazy" />
-                  <button className="btn-wishlist-card">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
-                    </svg>
-                  </button>
-                </div>
-                <div className="travel-card-content">
-                  <div className="card-location-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
-                    </svg>
-                    {dest.location}
-                  </div>
-                  <h3>{dest.name}</h3>
-                  <div className="card-rating-row">
-                    <div className="rating-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                      </svg>
-                      <span>{dest.rating}</span>
-                    </div>
-                    <span className="reviews-count">({dest.reviews} reviews)</span>
-                  </div>
-                  <div className="card-price-row">
-                    <span className="price-label">From</span>
-                    <span className="price-amount">{dest.price}</span>
-                  </div>
-                  <button className="btn-book-card">Book Now</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Mountain Destinations */}
-      <section className="destinations-row animate-on-scroll">
-        <div className="container">
-          <div className="row-header">
-            <div className="row-title-group">
-              <h2>Mountain & Hiking Adventures</h2>
-              <p>Conquer peaks and enjoy breathtaking views</p>
+      {mountainDestinations.length > 0 && (
+        <section className="destinations-row animate-on-scroll">
+          <div className="container">
+            <div className="row-header">
+              <div className="row-title-group">
+                <h2>Mountain & Hiking Adventures</h2>
+                <p>Conquer peaks and enjoy breathtaking views</p>
+              </div>
+            </div>
+            <div className="cards-horizontal-scroll">
+              {mountainDestinations.map(renderDestinationCard)}
             </div>
           </div>
-
-          <div className="cards-horizontal-scroll">
-            {mountainDestinations.map((dest) => (
-              <div key={dest.id} className="travel-card">
-                <div className="travel-card-image">
-                  <img src={dest.image} alt={dest.name} loading="lazy" />
-                  <button className="btn-wishlist-card">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
-                    </svg>
-                  </button>
-                </div>
-                <div className="travel-card-content">
-                  <div className="card-location-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
-                    </svg>
-                    {dest.location}
-                  </div>
-                  <h3>{dest.name}</h3>
-                  <div className="card-rating-row">
-                    <div className="rating-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                      </svg>
-                      <span>{dest.rating}</span>
-                    </div>
-                    <span className="reviews-count">({dest.reviews} reviews)</span>
-                  </div>
-                  <div className="card-price-row">
-                    <span className="price-label">From</span>
-                    <span className="price-amount">{dest.price}</span>
-                  </div>
-                  <button className="btn-book-card">Book Now</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Cultural Destinations */}
-      <section className="destinations-row animate-on-scroll">
-        <div className="container">
-          <div className="row-header">
-            <div className="row-title-group">
-              <h2>Cultural & Heritage Sites</h2>
-              <p>Experience rich traditions and historical wonders</p>
+      {culturalDestinations.length > 0 && (
+        <section className="destinations-row animate-on-scroll">
+          <div className="container">
+            <div className="row-header">
+              <div className="row-title-group">
+                <h2>Cultural & Heritage Sites</h2>
+                <p>Experience rich traditions and historical wonders</p>
+              </div>
+            </div>
+            <div className="cards-horizontal-scroll">
+              {culturalDestinations.map(renderDestinationCard)}
             </div>
           </div>
-
-          <div className="cards-horizontal-scroll">
-            {culturalDestinations.map((dest) => (
-              <div key={dest.id} className="travel-card">
-                <div className="travel-card-image">
-                  <img src={dest.image} alt={dest.name} loading="lazy" />
-                  <button className="btn-wishlist-card">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
-                    </svg>
-                  </button>
-                </div>
-                <div className="travel-card-content">
-                  <div className="card-location-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
-                    </svg>
-                    {dest.location}
-                  </div>
-                  <h3>{dest.name}</h3>
-                  <div className="card-rating-row">
-                    <div className="rating-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                      </svg>
-                      <span>{dest.rating}</span>
-                    </div>
-                    <span className="reviews-count">({dest.reviews} reviews)</span>
-                  </div>
-                  <div className="card-price-row">
-                    <span className="price-label">From</span>
-                    <span className="price-amount">{dest.price}</span>
-                  </div>
-                  <button className="btn-book-card">Book Now</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Special Offers */}
-      <section className="destinations-row promo-row animate-on-scroll">
-        <div className="container">
-          <div className="row-header">
-            <div className="row-title-group">
-              <h2>Special Offers & Deals</h2>
-              <p>Save up to 30% on selected destinations</p>
+      {promoDestinations.length > 0 && (
+        <section className="destinations-row promo-row animate-on-scroll">
+          <div className="container">
+            <div className="row-header">
+              <div className="row-title-group">
+                <h2>Budget-Friendly Destinations</h2>
+                <p>Amazing destinations under Rp 2.000.000</p>
+              </div>
+            </div>
+            <div className="cards-horizontal-scroll">
+              {promoDestinations.map((dest) => (
+                <Link to={`/destinations/${dest._id}`} key={dest._id} className="travel-card promo-card">
+                  <div className="travel-card-image">
+                    <img 
+                      src={dest.imageUrl || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600'} 
+                      alt={dest.name} 
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600';
+                      }}
+                    />
+                    <div className="discount-badge">Budget Pick</div>
+                    <button className="btn-wishlist-card" onClick={(e) => e.preventDefault()}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="travel-card-content">
+                    <div className="card-location-tag">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
+                      </svg>
+                      {dest.city}, {dest.country}
+                    </div>
+                    <h3>{dest.name}</h3>
+                    <div className="card-rating-row">
+                      <div className="rating-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        <span>{dest.averageRating || 4.5}</span>
+                      </div>
+                      <span className="reviews-count">({dest.totalReviews || 0} reviews)</span>
+                    </div>
+                    <div className="promo-price-row">
+                      <span className="promo-price">{formatPrice(dest.price)}</span>
+                    </div>
+                    <button className="btn-book-card promo-btn" onClick={(e) => e.preventDefault()}>
+                      View Details
+                    </button>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
-
-          <div className="cards-horizontal-scroll">
-            {promoDestinations.map((dest) => (
-              <div key={dest.id} className="travel-card promo-card">
-                <div className="travel-card-image">
-                  <img src={dest.image} alt={dest.name} loading="lazy" />
-                  <div className="discount-badge">{dest.discount}% OFF</div>
-                  <button className="btn-wishlist-card">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeWidth="2"/>
-                    </svg>
-                  </button>
-                </div>
-                <div className="travel-card-content">
-                  <div className="card-location-tag">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" strokeWidth="2"/>
-                    </svg>
-                    {dest.location}
-                  </div>
-                  <h3>{dest.name}</h3>
-                  <div className="card-rating-row">
-                    <div className="rating-badge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                      </svg>
-                      <span>{dest.rating}</span>
-                    </div>
-                    <span className="reviews-count">({dest.reviews} reviews)</span>
-                  </div>
-                  <div className="promo-price-row">
-                    <span className="original-price">{dest.originalPrice}</span>
-                    <span className="promo-price">{dest.price}</span>
-                  </div>
-                  <button className="btn-book-card promo-btn">Book Now</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="cta-travel animate-on-scroll">
