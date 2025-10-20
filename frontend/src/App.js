@@ -1,3 +1,4 @@
+// frontend/src/App.js - FOOTER REMOVED
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -32,34 +33,6 @@ function AppContent() {
       
       {/* Floating Voice Button - Hide di halaman Voice Agent */}
       {!hideFloatingButton && <FloatingVoiceButton />}
-      
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h3 className="footer-logo">🌍 Wanderly</h3>
-              <p>Platform destinasi wisata terbaik untuk menemukan petualangan Anda berikutnya.</p>
-            </div>
-            <div className="footer-section">
-              <h4>Quick Links</h4>
-              <ul>
-                <li><a href="/">Beranda</a></li>
-                <li><a href="/destinations">Destinasi</a></li>
-                <li><a href="/voice-agent">Voice Agent</a></li>
-                <li><a href="/add-destination">Tambah Destinasi</a></li>
-              </ul>
-            </div>
-            <div className="footer-section">
-              <h4>Kontak</h4>
-              <p>Email: info@wanderly.com</p>
-              <p>Phone: +62 123 456 789</p>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>&copy; 2025 Wanderly. All rights reserved. Built with ❤️</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
